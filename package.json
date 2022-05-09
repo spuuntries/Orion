@@ -1,0 +1,14 @@
+{
+  "name": "orion",
+  "version": "0.0.1-artemis",
+  "description": "Open-source Real-time Inference of Open-ended Notes on artworks",
+  "main": "index.js",
+  "repository": "https://github.com/spuuntries/Orion.git",
+  "author": "spuun <kek@spuun.art>",
+  "license": "lgpl-3.0-only",
+  "private": true,
+  "dependencies": {
+    "discord.js": "^13.6.0",
+    "pythonia": "https://github.com/spuuntries/jspybridge"
+  }
+}
