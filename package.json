@@ -9,6 +9,7 @@
   "private": true,
   "dependencies": {
     "discord.js": "^13.6.0",
+    "dotenv": "^16.0.0",
     "pythonia": "https://github.com/spuuntries/jspybridge"
   }
 }
