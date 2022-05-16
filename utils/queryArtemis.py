@@ -7,6 +7,7 @@ The MIT License (MIT)
 Originally created at 10/3/20, for Python 3.x by Panos Achlioptas 
 (Copyright (c) 2021 Panos Achlioptas (ai.stanford.edu/~optas) & Stanford Geometric Computing Lab)
 
+Script modified to allow for modular loading
 The Apache License 2.0 (Apache-2.0)
 Modified at 11/05/22, for Python 3.x by Spuun
 (Copyright (c) 2020 Spuun (kek@spuun.art) & Art Union)
@@ -16,19 +17,20 @@ Modified at 11/05/22, for Python 3.x by Spuun
 import torch
 import json
 import numpy as np
+import pandas as pd
 
-from artemis.in_out.basics import pickle_data
 from artemis.in_out.arguments import parse_test_speaker_arguments
 from artemis.in_out.neural_net_oriented import torch_load_model, load_saved_speaker, seed_torch_code
 from artemis.neural_models.attentive_decoder import negative_log_likelihood
 from artemis.captioning.sample_captions import versatile_caption_sampler, captions_as_dataframe
 from artemis.in_out.datasets import sub_index_affective_dataloader
-from artemis.in_out.datasets import default_grounding_dataset_from_affective_loader
 from artemis.in_out.datasets import custom_grounding_dataset_similar_to_affective_loader
 
 
-def query():
-    args = parse_test_speaker_arguments()
+def query(data):
+    # Define a custom dataset to allow for loading images on-the-go
+    def replacement_custom_dataset(data):
+        df = df.to
 
     # Load pretrained speaker & its corresponding train-val-test data. If you do not provide a
     # custom set of images to annotate. Then based on the -split you designated it will annotate this data.
@@ -57,18 +59,9 @@ def query():
         nll = negative_log_likelihood(speaker, working_data_loader, device)
         print('{} NLL: {}'.format(args.split, nll))
 
-    img2emo_clf = None
-    if args.img2emo_checkpoint:
-        img2emo_clf = torch_load_model(
-            args.img2emo_checkpoint, map_location=device)
-
     if use_custom_dataset:
         annotate_loader = custom_grounding_dataset_similar_to_affective_loader(args.custom_data_csv,
                                                                                working_data_loader, args.n_workers)
-    else:
-        # removes duplicate images and optionally uses img2emo_clf to create a grounding emotion.
-        annotate_loader = default_grounding_dataset_from_affective_loader(working_data_loader, img2emo_clf,
-                                                                          device, args.n_workers)
 
     if args.subsample_data != -1:
         sids = np.random.choice(
@@ -100,4 +93,4 @@ def query():
         print('Done.')
 
     #pickle_data(args.out_file, final_results)
-    return df.to_dict(args.out_file)  # only return the DataFrame
+    return df.to_dict()  # return a dict
